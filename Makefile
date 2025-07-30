@@ -1,29 +1,21 @@
-#
-# 'make'        build executable file 'main'
-# 'make clean'  removes all .o and executable files
-#
 
-# define the C compiler to use
 CC = gcc
 
-# define any compile-time flags
-CFLAGS	:= -Wall -Wextra -g $(shell pkgconf sdl2 --libs --cflags)
 
-# define library paths in addition to /usr/lib
-#   if I wanted to include libraries not in /usr/lib I'd specify
-#   their path using -Lpath, something like:
-LFLAGS =
+CFLAGS	+= -Wall -Wextra -g 
 
-# define output directory
+
+LFLAGS = $(shell pkgconf sdl2 --libs --cflags) $(shell pkgconf criterion --libs --cflags) -I/opt/homebrew/Cellar/cjson/1.7.18/include -lcjson
+
 OUTPUT	:= output
 
-# define source directory
+
 SRC		:= src
 
-# define include directory
+
 INCLUDE	:= include
 
-# define lib directory
+
 LIB		:= lib
 
 ifeq ($(OS),Windows_NT)
@@ -44,26 +36,16 @@ RM = rm -f
 MD	:= mkdir -p
 endif
 
-# define any directories containing header files other than /usr/include
 INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 
-# define the C libs
 LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
 
-# define the C source files
 SOURCES		:= $(wildcard $(patsubst %,%/*.c, $(SOURCEDIRS)))
 
-# define the C object files 
 OBJECTS		:= $(SOURCES:.c=.o)
 
-# define the dependency output files
 DEPS		:= $(OBJECTS:.o=.d)
 
-#
-# The following part of the makefile is generic; it can be used to 
-# build any executable just by changing the definitions above and by
-# deleting dependencies appended to the file from 'make depend'
-#
 
 OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
 
@@ -76,14 +58,10 @@ $(OUTPUT):
 $(MAIN): $(OBJECTS) 
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
 
-# include all .d files
+
 -include $(DEPS)
 
-# this is a suffix replacement rule for building .o's and .d's from .c's
-# it uses automatic variables $<: the name of the prerequisite of
-# the rule(a .c file) and $@: the name of the target of the rule (a .o file) 
-# -MMD generates dependency output files same name as the .o file
-# (see the gnu make manual section about automatic variables)
+
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDES) -c -MMD $<  -o $@
 
@@ -93,6 +71,9 @@ clean:
 	$(RM) $(call FIXPATH,$(OBJECTS))
 	$(RM) $(call FIXPATH,$(DEPS))
 	@echo Cleanup complete!
+linecount:
+	@echo "Counting lines in .c, .h, and .md files..."
+	@find . -type f \( -name "*.c" -o -name "*.h" -o -name "*.md" \) -exec cat {} + | wc -l
 
 run: all
 	./$(OUTPUTMAIN)

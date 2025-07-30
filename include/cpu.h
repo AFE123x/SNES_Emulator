@@ -1,16 +1,15 @@
 #ifndef CPU_H
 #define CPU_H
 #include<stdint.h>
+#include<stdbool.h>
 typedef uint32_t u32;
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint64_t u64;
 /**
- * a bitfield representation of the 16 bit registers
- * the 65816 registers can either be 16 bit or two 8
- * bit registers
+ a bitfield representation of the 16 bit registers the 65816 registers can either be 16 bit or two 8 bit registers
  */
-typedef union sreg{
+typedef union sdreg{
     struct{
         u16 lo: 8;
         u16 hi: 8;
@@ -19,8 +18,7 @@ typedef union sreg{
 } sreg_t;
 
 /**
- * The Program Counter and Index registers have an 
- * additional 8 bits known as the data bank. 
+    The Program Counter and Index registers have an additional 8 bits known as the data bank.
  */
 typedef union dreg{
     struct{
@@ -35,7 +33,7 @@ typedef union dreg{
  * our status register representation
  **/
 typedef union status{
-    struct{
+    struct native{
         u8 ce: 1; // carry + emulation flag
         u8 z: 1;  // zero flag
         u8 i: 1;  // interrupt disable
@@ -44,7 +42,17 @@ typedef union status{
         u8 m: 1;  // memory+accumulator select
         u8 v: 1;  // overflow flag
         u8 n: 1;  // negative flag
-    };
+    } n;
+    struct emulation{
+        u8 ce: 1;
+        u8 z: 1;
+        u8 i: 1;
+        u8 d: 1;
+        u8 b: 1;
+        u8 u: 1; //unused
+        u8 v: 1;
+        u8 n: 1;
+    } e;
     u8 raw;
 } status_t;
 
@@ -52,15 +60,44 @@ typedef union status{
  * Our CPU struct representation¡
  **/
 typedef struct cpu {
-    uint64_t cycles_left;
+    u64 cycles_left;
     sreg_t a;
     dreg_t x;
     dreg_t y;
-    dreg_t pc;
-    u16 d; //direct page register
+    dreg_t pc; // includes program bank register
+    u16 d; // direct page register
     status_t flag;
+    u32 address; //calculating address from addressing mode
+    u16 data; //data we read from address
+    bool emulation_mode;
 } cpu_t;
 
+
+void StepCPU(cpu_t* cpu);
+
+typedef struct instruction{
+    void (*addressing_mode)(cpu_t* cpu);
+    void (*instruction)(cpu_t* cpu);
+    u8 cycles_left;
+    #ifdef TEST
+    u8* memory;
+    #endif
+}instruction_t;
+
+/* Helper macro to define elements in opcode table*/
+#define DEFINE_INSTRUCTION(opcode,addressmode,instruct,cycles) \
+[opcode] = { \
+    .addressing_mode = addressmode, \
+    .instruction = instruct, \
+    .cycles_left = cycles, \
+}
+
+/* Addressing modes */
+void implied(cpu_t* cpu);
+
+
+/* Instructions*/
+void clc(cpu_t* cpu);  void xce(cpu_t* cpu);
 
 
 #endif

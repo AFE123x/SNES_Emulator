@@ -21,7 +21,7 @@ int main(int argc, char const *argv[])
         DEFINE_SNES(snes,cpu) //macro to declare and define snes_t struct
         clock(&snes);
     #else
-        test1();
+        testcpu();
     #endif
 
 

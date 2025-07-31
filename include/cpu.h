@@ -2,6 +2,8 @@
 #define CPU_H
 #include<stdint.h>
 #include<stdbool.h>
+#include "common.h"
+#include "bus.h"
 typedef uint32_t u32;
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -70,6 +72,7 @@ typedef struct cpu {
     u32 address; //calculating address from addressing mode
     u16 data; //data we read from address
     bool emulation_mode;
+    bus_t* bus;
 } cpu_t;
 
 
@@ -79,9 +82,6 @@ typedef struct instruction{
     void (*addressing_mode)(cpu_t* cpu);
     void (*instruction)(cpu_t* cpu);
     u8 cycles_left;
-    #ifdef TEST
-    u8* memory;
-    #endif
 }instruction_t;
 
 /* Helper macro to define elements in opcode table*/
@@ -95,9 +95,11 @@ typedef struct instruction{
 /* Addressing modes */
 void implied(cpu_t* cpu);
 
-
 /* Instructions*/
 void clc(cpu_t* cpu);  void xce(cpu_t* cpu);
 
-
+/* unit tests */
+#ifdef TEST
+void testcpu();
+#endif
 #endif

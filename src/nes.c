@@ -1,5 +1,6 @@
 #include "../include/nes.h"
 #include "../include/cpu.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include<assert.h>
 
@@ -10,4 +11,5 @@
  */
 void clock(snes_t* snes){
     StepCPU(snes->cpu);
+    
 }

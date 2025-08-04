@@ -2,10 +2,10 @@
 CC = gcc
 
 
-CFLAGS	+= -Wall -Wextra -g 
+CFLAGS	+= -Wall -Wextra -g -I/opt/homebrew/Cellar/cjson/1.7.18/include
 
 
-LFLAGS = $(shell pkgconf sdl2 --libs --cflags) $(shell pkgconf criterion --libs --cflags) -I/opt/homebrew/Cellar/cjson/1.7.18/include -lcjson
+LFLAGS =  -lcjson $(shell pkgconf sdl2 --libs --cflags) $(shell pkgconf criterion --libs --cflags) 
 
 OUTPUT	:= output
 
@@ -16,7 +16,7 @@ SRC		:= src
 INCLUDE	:= include
 
 
-LIB		:= lib
+LIB		:= documentation
 
 ifeq ($(OS),Windows_NT)
 MAIN	:= main.exe

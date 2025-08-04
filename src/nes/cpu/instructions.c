@@ -11,3 +11,7 @@ void clc(cpu_t* cpu){
 void xce(cpu_t* cpu){
     cpu->emulation_mode = cpu->flag.n.ce > 0;
 }
+
+void lda(cpu_t* cpu){
+    
+}

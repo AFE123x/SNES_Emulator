@@ -19,17 +19,7 @@ typedef union sdreg{
     u16 raw;
 } sreg_t;
 
-/**
-    The Program Counter and Index registers have an additional 8 bits known as the data bank.
- */
-typedef union dreg{
-    struct{
-        u32 lo: 8;
-        u32 hi: 8;
-        u32 bank: 8;
-    };
-    u32 raw;
-} dreg_t;
+
 
 /**
  * our status register representation
@@ -64,9 +54,11 @@ typedef union status{
 typedef struct cpu {
     u64 cycles_left;
     sreg_t a;
-    dreg_t x;
-    dreg_t y;
-    dreg_t pc; // includes program bank register
+    sreg_t x;
+    sreg_t y;
+    sreg_t pc; // includes program bank register
+    u32 data_bank_register;
+    u32 prg_bank_register;
     u16 d; // direct page register
     status_t flag;
     u32 address; //calculating address from addressing mode
@@ -92,11 +84,16 @@ typedef struct instruction{
     .cycles_left = cycles, \
 }
 
+#define JOIN_PC_BNK(name) name->prg_bank_register << 16 | (name->pc.raw & 0xFFFF);
 /* Addressing modes */
-void implied(cpu_t* cpu);
+void implied(cpu_t* cpu);   void immediate(cpu_t* cpu);
 
 /* Instructions*/
-void clc(cpu_t* cpu);  void xce(cpu_t* cpu);
+void clc(cpu_t* cpu);   void xce(cpu_t* cpu);
+void lda(cpu_t* cpu);
+
+/* fetch helper function */
+uint8_t fetch(cpu_t* cpu);
 
 /* unit tests */
 #ifdef TEST

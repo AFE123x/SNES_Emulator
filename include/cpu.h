@@ -65,13 +65,14 @@ typedef struct cpu {
     u16 data; //data we read from address
     bool emulation_mode;
     bus_t* bus;
+    uint16_t sp;
 } cpu_t;
 
 
 void StepCPU(cpu_t* cpu);
 
 
-#define JOIN_PC_BNK(name) (u32)name->prg_bank_register << 16 | ((u32)name->pc.raw & 0xFFFF);
+#define JOIN_PC_BNK(name) (u32)((name)->prg_bank_register << 16)| ((u32)(name)->pc.raw & 0xFFFF);
 
 /* fetch helper function */
 uint8_t fetch(cpu_t* cpu);

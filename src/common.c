@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include<stdio.h>
+#include<stdarg.h>
 
 /**
  * A helper function to print out parts not implemented yet
@@ -20,9 +21,16 @@ void todo_func(char* file, int line, char* quote){
  * @param line - line number where assertion is located
  * @param message - custom message to define what failure means
  */
-void assert_func(bool condition, char* file, int line,char* message){
-    if(!condition){
-        fprintf(stderr,"assertion %s, line %d FAILED: %s\n",file,line,message);
+void assert_func(bool condition, const char* file, int line, const char* format, ...) {
+    if (!condition) {
+        fprintf(stderr, "assertion %s, line %d FAILED: ", file, line);
+
+        va_list args;
+        va_start(args, format);
+        vfprintf(stderr, format, args);  // Use vfprintf to handle format + args
+        va_end(args);
+
+        fprintf(stderr, "\n");
         exit(1);
     }
 }

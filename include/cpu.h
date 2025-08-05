@@ -70,33 +70,14 @@ typedef struct cpu {
 
 void StepCPU(cpu_t* cpu);
 
-typedef struct instruction{
-    void (*addressing_mode)(cpu_t* cpu);
-    void (*instruction)(cpu_t* cpu);
-    u8 cycles_left;
-}instruction_t;
 
-/* Helper macro to define elements in opcode table*/
-#define DEFINE_INSTRUCTION(opcode,addressmode,instruct,cycles) \
-[opcode] = { \
-    .addressing_mode = addressmode, \
-    .instruction = instruct, \
-    .cycles_left = cycles, \
-}
-
-#define JOIN_PC_BNK(name) name->prg_bank_register << 16 | (name->pc.raw & 0xFFFF);
-/* Addressing modes */
-void implied(cpu_t* cpu);   void immediate(cpu_t* cpu);
-
-/* Instructions*/
-void clc(cpu_t* cpu);   void xce(cpu_t* cpu);
-void lda(cpu_t* cpu);
+#define JOIN_PC_BNK(name) (u32)name->prg_bank_register << 16 | ((u32)name->pc.raw & 0xFFFF);
 
 /* fetch helper function */
 uint8_t fetch(cpu_t* cpu);
 
-/* unit tests */
-#ifdef TEST
-void testcpu();
-#endif
+void execute_instruction(cpu_t* cpu,uint8_t opcode);
+
+
+void test(cpu_t* cpu);
 #endif

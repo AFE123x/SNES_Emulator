@@ -7,12 +7,11 @@
 
 uint8_t fetch(cpu_t* cpu){
     u32 address = JOIN_PC_BNK(cpu);
-
-}
-
-static void execute_instruction(cpu_t* cpu){
-    uint8_t opcode = fetch(cpu);
-    
+    uint8_t toreturn = 0;
+    bool result = cpuread(cpu->bus, address, &toreturn);
+    ASSERT(result, "cpuread failed");
+    cpu->pc.raw++;
+    return toreturn;
 }
 
 /**
@@ -20,9 +19,10 @@ static void execute_instruction(cpu_t* cpu){
  * @param cpu - reference to cpu structure
  */
 void StepCPU(cpu_t* cpu){
-    
+
     if(cpu->cycles_left == 0){
-        execute_instruction(cpu);
+        uint8_t opcode = fetch(cpu);
+        execute_instruction(cpu, opcode);
     }
     cpu->cycles_left--;
 }

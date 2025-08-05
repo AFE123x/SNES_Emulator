@@ -10,6 +10,7 @@
  * @param snes - the system we want to perform clock tick on.
  */
 void clock(snes_t* snes){
-    StepCPU(snes->cpu);
+    // StepCPU(snes->cpu);
+    test(snes->cpu);
     
 }

@@ -2,10 +2,10 @@
 CC = gcc
 
 
-CFLAGS	+= -Wall -Wextra -g -I/opt/homebrew/Cellar/cjson/1.7.18/include
+CFLAGS	+= -Wall -Wextra -g $(shell pkgconf sdl2 --cflags) $(shell pkgconf criterion --cflags) $(shell pkgconf json-c --cflags)
 
 
-LFLAGS =  -lcjson $(shell pkgconf sdl2 --libs --cflags) $(shell pkgconf criterion --libs --cflags) 
+LFLAGS = $(shell pkgconf sdl2 --libs) $(shell pkgconf criterion --libs) $(shell pkgconf json-c --libs)
 
 OUTPUT	:= output
 
